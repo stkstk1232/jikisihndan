@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>直心流・「部屋」運気タイプ診断</title>
+    
+    <!-- ファビコン設定 -->
+    <link rel="icon" href="JIKIshindan_icon.ico" type="image/x-icon">
+    <link rel="shortcut icon" href="JIKIshindan_icon.ico" type="image/x-icon">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        :root {
+            --gold: #d4af37;
+            --white: #ffffff;
+            --card-bg: rgba(255, 255, 255, 0.98);
+        }
+
+        body {
+            background-color: #f8f9fa;
+            color: #333;
+            font-family: 'Hiragino Mincho ProN', serif;
+            margin: 0; padding: 0;
+            transition: background-color 0.8s ease, color 0.8s ease;
+            min-height: 100vh;
+            display: flex; flex-direction: column;
+        }
+
+        /* 広告枠 */
+        .ad-container {
+            margin: 15px auto;
+            max-width: 100%;
+            min-height: 100px;
+            background: rgba(0,0,0,0.03);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            color: #999;
+            border: 1px dashed #ccc;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        .ad-label { display: block; font-size: 0.6rem; text-align: center; color: #bbb; margin-bottom: 4px; }
+
+        .progress-container {
+            position: fixed; top: 0; width: 100%; height: 6px;
+            background: rgba(0,0,0,0.1); z-index: 1000;
+        }
+        #progress-bar { height: 100%; width: 0%; background: var(--gold); transition: width 0.3s; }
+
+        .container { max-width: 500px; margin: 0 auto; width: 100%; padding: 40px 20px; box-sizing: border-box; flex: 1; }
+
+        .card {
+            background: var(--card-bg); border-radius: 25px; padding: 35px;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.12); text-align: center;
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            color: #333;
+        }
+
+        h1 { color: var(--gold); font-size: 1.4rem; margin-bottom: 15px; font-weight: bold; }
+        .question-text { font-size: 1.2rem; font-weight: 900; margin-bottom: 30px; min-height: 3.5em; line-height: 1.6; }
+
+        /* 星座グリッド */
+        .zodiac-grid {
+            display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 20px 0;
+        }
+        .zodiac-btn {
+            background: white; border: 1px solid #ddd; padding: 10px; border-radius: 12px;
+            font-size: 0.85rem; cursor: pointer; transition: 0.2s;
+        }
+        .zodiac-btn:active, .zodiac-btn.active {
+            background: var(--gold); color: white; border-color: var(--gold);
+        }
+
+        /* スライダー */
+        .slider-wrapper { margin: 30px 0; position: relative; }
+        .slider-labels { display: flex; justify-content: space-between; font-size: 0.75rem; font-weight: bold; margin-bottom: 10px; color: #666; }
+        input[type=range] { -webkit-appearance: none; width: 100%; background: transparent; }
+        input[type=range]::-webkit-slider-runnable-track { width: 100%; height: 12px; cursor: pointer; background: #eee; border-radius: 6px; }
+        input[type=range]::-webkit-slider-thumb { height: 32px; width: 32px; border-radius: 50%; background: var(--gold); cursor: pointer; -webkit-appearance: none; margin-top: -11px; border: 2px solid #fff; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
+
+        .next-btn {
+            background: var(--gold); color: white; padding: 18px; border-radius: 50px;
+            width: 100%; border: none; font-weight: 900; font-size: 1.1rem; cursor: pointer;
+            box-shadow: 0 4px 10px rgba(212, 175, 55, 0.3); margin-top: 10px;
+        }
+
+        #result-screen { display: none; }
+        .screenshot-area {
+            background: white; padding: 25px; border-radius: 20px;
+            border: 6px double var(--gold); margin-bottom: 20px; color: #333;
+        }
+        .type-name { font-size: 2.2rem; color: var(--gold); font-weight: 900; margin: 10px 0; }
+        .res-bold { font-weight: 900; font-size: 1.1rem; display: block; margin: 5px 0; }
+
+        .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 15px 0; }
+        .info-item { background: #fdfcf5; padding: 10px; border-radius: 12px; border: 1px solid #f0e6c0; font-size: 0.8rem; color: #333; }
+        .info-item b { display: block; color: var(--gold); margin-bottom: 3px; }
+
+        .long-description { 
+            text-align: left; line-height: 1.8; margin-top: 30px; padding: 25px; 
+            background: #ffffff; border-radius: 15px; border-left: 5px solid var(--gold);
+            color: #1a1a1a !important; box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+        .long-description h4 { color: var(--gold); font-weight: 900; margin-top: 20px; border-bottom: 1px solid #eee; }
+
+        .share-btn { background: #000; color: #fff; padding: 18px; border-radius: 50px; width: 100%; border: none; font-weight: 900; cursor: pointer; }
+        footer { text-align: center; padding: 30px; font-size: 0.7rem; opacity: 0.7; }
+        .hidden { display: none; }
+    </style>
+</head>
+<body>
+
+<div class="progress-container"><div id="progress-bar"></div></div>
+
+<div class="container">
+    <div id="lock-screen" class="card hidden">
+        <h1>鑑定準備中</h1>
+        <p>直心流診断は1時間に1回のみです。</p>
+        <div class="ad-container"><div><span class="ad-label">AD SPACE</span></div></div>
+        <p style="font-size: 0.8rem; margin-top: 15px;">結果をシェアすると再診断が可能です。</p>
+    </div>
+
+    <!-- スタート画面 -->
+    <div id="start-screen" class="card">
+        <h1>直心流<br>「部屋」運気タイプ診断</h1>
+        <p style="font-weight: bold;">あなたの部屋は、あなたの運命を映す鏡。</p>
+        <div class="ad-container"><div><span class="ad-label">AD SPACE</span></div></div>
+        <button class="next-btn" onclick="showZodiac()">鑑定を開始する</button>
+    </div>
+
+    <!-- 星座選択画面 -->
+    <div id="zodiac-screen" class="card hidden">
+        <h1>星座を選択</h1>
+        <p style="font-size: 0.8rem;">あなたの宿命星から気の流れを読み解きます</p>
+        <div class="zodiac-grid" id="zodiac-grid"></div>
+        <button class="next-btn" id="zodiac-next" disabled onclick="initQuiz()">診断へ進む</button>
+    </div>
+
+    <!-- クイズ画面 -->
+    <div id="quiz-screen" class="hidden">
+        <div class="card">
+            <div id="q-num" style="color:var(--gold); font-size:0.85rem; font-weight:bold;">1 / 12</div>
+            <div id="q-text" class="question-text"></div>
+            <div class="slider-wrapper">
+                <div class="slider-labels"><span>全く違う</span><span>非常にそう</span></div>
+                <input type="range" id="answer-slider" min="0" max="100" value="50">
+            </div>
+            <button class="next-btn" id="next-action" onclick="handleNext()">次へ進む</button>
+            <button id="back-btn" style="background:none; border:none; color:#888; text-decoration:underline; font-size:0.8rem; margin-top:20px; cursor:pointer;" onclick="goBack()">戻る</button>
+        </div>
+    </div>
+
+    <!-- 結果画面 -->
+    <div id="result-screen">
+        <div id="capture-area" class="screenshot-area">
+            <p style="font-size:0.7rem; margin:0;"><span id="res-zodiac-name"></span>の鑑定書</p>
+            <div id="res-type" class="type-name">鑑定中</div>
+            <span id="res-short" class="res-bold"></span>
+            <div class="info-grid">
+                <div class="info-item"><b>今日の吉方位</b><span id="res-dir" style="font-weight:900;"></span></div>
+                <div class="info-item" id="color-box"><b>ラッキーカラー</b><span id="res-color-name" style="font-weight:900;"></span></div>
+            </div>
+            <p id="res-direction-advice" style="font-size:0.85rem; font-weight:bold;"></p>
+        </div>
+
+        <div class="ad-container"><div><span class="ad-label">AD SPACE</span></div></div>
+        <button class="share-btn" onclick="shareAndUnlock()">結果を保存・シェア</button>
+
+        <div class="long-description">
+            <h3 style="border-bottom: 3px solid var(--gold); padding-bottom: 5px;">直心流・詳細鑑定書</h3>
+            <h4>【星座と住まいの共鳴鑑定】</h4>
+            <div id="res-zodiac-detail" style="font-weight:bold; color:var(--gold); margin-bottom:15px;"></div>
+            <h4>【全体運勢と鑑定】</h4>
+            <div id="res-long" style="font-weight:bold;"></div>
+            <h4>【ラッキーカラーの選定理由】</h4>
+            <div id="res-color-reason"></div>
+            <h4>【吉方位の選定理由】</h4>
+            <div id="res-dir-reason"></div>
+            <h4>【最近の行動推測と開運行動】</h4>
+            <div id="res-behavior" style="font-weight:bold; background: #f9f9f9; padding: 15px; border-radius: 10px; border: 1px solid #ddd;"></div>
+        </div>
+        <button class="next-btn" style="background:#fff; color:var(--gold); border: 2px solid var(--gold);" onclick="location.reload()">TOPへ戻る</button>
+    </div>
+</div>
+
+<footer>(C) 2026 stkstk1232 All Rights Reserved</footer>
+
+<script>
+// --- データバンク ---
+const zodiacs = [
+    {n:"牡羊座", d:"活動的なあなたの火の気は、玄関を整えることでさらに燃え上がります。"},
+    {n:"牡牛座", d:"美を愛するあなたの地受性は、寝室の質を高めることで金運へと直結します。"},
+    {n:"双子座", d:"情報を司るあなたの気は、デスク周りの整理で驚くほど明晰になります。"},
+    {n:"蟹座", d:"愛深いあなたの家庭運は、キッチンを磨くことで守護の力が最大化されます。"},
+    {n:"獅子座", d:"輝きを求めるあなたの運気は、鏡をピカピカにすることで名声へと変わります。"},
+    {n:"乙女座", d:"繊細なあなたの健康運は、クローゼットの隙間から新しい気が入ります。"},
+    {n:"天秤座", d:"調和を重んじるあなたの対人運は、リビングの対称性を整えると向上します。"},
+    {n:"蠍座", d:"神秘的なあなたの直感力は、水回りの浄化によって真実を映し出します。"},
+    {n:"射手座", d:"自由なあなたの発展運は、ベランダの掃除で遠方からの吉報を呼びます。"},
+    {n:"山羊座", d:"堅実なあなたの仕事運は、北の方角を重厚に整えることで揺るぎなくなります。"},
+    {n:"水瓶座", d:"独創的なあなたの発想力は、古い物を手放すことで宇宙の智慧と繋がります。"},
+    {n:"魚座", d:"共感力の高いあなたの癒やし運は、香りを部屋に満たすことで神域に達します。"}
+];
+
+const resultsMaster = [
+    { t:"黄金鳳凰型", s:"万物が平伏す神域", l:"宇宙の真理と完全に調和した、一切の邪気が入り込めない最高峰の空間です。" },
+    { t:"帝王紫光型", s:"栄華を極める王の居城", l:"圧倒的なカリスマ性と富を引き寄せる、格式高いエネルギーに満ち溢れています。" },
+    { t:"龍脈源泉型", s:"運命が湧き出る聖なる泉", l:"絶え間なく新しいチャンスが湧き出し、周囲の人々までをも幸福にする力を持っています。" },
+    { t:"白光寺院型", s:"魂を浄化する静寂の地", l:"訪れるだけで心が洗われ、深い瞑想状態のような高い精神性を保つ特別な場所です。" },
+    { t:"金剛不壊型", s:"何者にも揺るがない鉄壁の運気", l:"強固な守護に包まれ、トラブルを即座に幸運へと変換する強靭な気が流れています。" },
+    { t:"瑞雲招福型", s:"福が循環する調和の住まい", l:"安定した気の流れがあり、日々の小さな幸せを大きな成功へと育てていける良質な空間です。" },
+    { t:"春風彩光型", s:"良縁が舞い込む希望の窓", l:"風通しが良く、対人運が非常に活発。あなたの元へ新しい知識や縁が集まってくる状態です。" },
+    { t:"月下美人型", s:"秘めた才能が開花する部屋", l:"一見静かですが、内側に強い創造性を秘めています。夜の休息がそのまま力に変わります。" },
+    { t:"新緑息吹型", s:"生命力に溢れる再生の場", l:"心身の疲れを癒やし、明日への活力を急速にチャージできる、非常に健康的な環境です。" },
+    { t:"蒼天大海型", s:"自由な発想が広がる学び舎", l:"固定観念に縛られず、新しい自分を模索するのに最適な空間です。" },
+    { t:"星露待機型", s:"夜明けを待つ静かな聖域", l:"エネルギーを蓄える時期です。整理一つで、滞っていた運気が爆発的に反転する可能性があります。" },
+    { t:"霧中古城型", s:"眠れるお宝を隠す霧の館", l:"物の多さが運気を遮っていますが、その下には素晴らしい才能が眠っています。" },
+    { t:"残月薄光型", s:"静かなる変革の前触れ", l:"終わりと始まりの境界線にいます。思い切った断捨離が太陽を呼び込む鍵となります。" }
+];
+
+const colorsData = [
+    {n:"茜色", h:"#b7282e", r:"あなたの情熱と部屋の静かな気が共鳴しています。この色は生命力と勝負運を司り、現状の停滞を打破し、新しい挑戦へ踏み出す勇気を与えてくれるでしょう。"},
+    {n:"瑠璃色", h:"#2a5caa", r:"知性と誠実さが求められる現在のあなたに最適です。混乱した思考を鎮め、真実を見抜く力を授けます。部屋の東側に置くと直感力が研ぎ澄まされます。"},
+    {n:"山吹色", h:"#f8b500", r:"豊穣と富を象徴するこの色は、部屋の「陽」の気を強めます。金運を呼び込む力が非常に強く、努力が形となって現れる時期に来ています。"},
+    {n:"翡翠色", h:"#38b48b", r:"再生と癒やしを司るこの色は、あなたの精神的な休息を優先すべき鑑定結果に基づいています。心身を清浄な状態へと戻す強力な後ろ盾となります。"}
+];
+
+const directionsData = [
+    {d:"北", r:"北は「水」を司り、浄化と信頼を司る方位です。ここを清めることで周囲との関係が改善し、安らぎが手に入ります。"},
+    {d:"東", r:"東は「木」を司り、発展と若さを象徴します。ここを整えると吉報が舞い込みます。"},
+    {d:"南", r:"南は「火」を司り、知性と名声を象徴します。窓や鏡を磨くことで魅力が評価されます。"},
+    {d:"西", r:"西は「金」を司り、金運と喜びを象徴します。黄色や白い物を置くと金運が循環します。"}
+];
+
+const behaviorAds = [
+    "あなたは最近、規則正しい生活に加え、他者への感謝を自然と行えていたはずです。その無欲な行動が部屋の気を高めました。",
+    "最近のあなたは、忙しさのあまり呼吸が浅くなり、小さな幸せを見失いかけていたかもしれません。まず玄関の靴を全てしまい、床を拭いてください。",
+    "何かに焦りを感じ、答えを急ぎすぎていた節があります。部屋の「角」に溜まった埃を掃除してください。立ち止まる勇気が開運の鍵です。"
+];
+
+let selectedZodiac = null;
+let currentIdx = 0;
+let rawScores = [];
+let selectedQs = [];
+
+function checkLock() {
+    const last = localStorage.getItem('jishin_app_lock');
+    if (last && (Date.now() - last < 3600000)) {
+        document.getElementById('start-screen').classList.add('hidden');
+        document.getElementById('lock-screen').classList.remove('hidden');
+    }
+}
+
+function showZodiac() {
+    document.getElementById('start-screen').classList.add('hidden');
+    document.getElementById('zodiac-screen').classList.remove('hidden');
+    const grid = document.getElementById('zodiac-grid');
+    grid.innerHTML = "";
+    zodiacs.forEach((z, i) => {
+        const btn = document.createElement('button');
+        btn.className = 'zodiac-btn';
+        btn.innerText = z.n;
+        btn.onclick = () => {
+            document.querySelectorAll('.zodiac-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            selectedZodiac = z;
+            document.getElementById('zodiac-next').disabled = false;
+        };
+        grid.appendChild(btn);
+    });
+}
+
+function initQuiz() {
+    selectedQs = [
+        "玄関の床に靴が一足も出ておらず、塵一つない状態だ。",
+        "寝室にスマートフォンを持ち込まずに就寝している。",
+        "朝起きたらすぐに窓を開けて空気を入れている。",
+        "トイレの中に、本や紙類を一切置いていない。",
+        "床の上にバッグや衣類を直置きすることはない。",
+        "見えにくいサッシの汚れまで掃除している。",
+        "クローゼットの収納率は7割以下で余裕がある。",
+        "冷蔵庫の中の食材は全て把握され整理されている。",
+        "部屋に生き生きとした観葉植物や花を飾っている。",
+        "郵便物やレシートは、その日のうちに処分している。",
+        "水回りは、毎晩磨き上げられて光っている。",
+        "本当に必要で、愛せるものだけに囲まれている。"
+    ].sort(() => Math.random() - 0.5);
+    
+    document.getElementById('zodiac-screen').classList.add('hidden');
+    document.getElementById('quiz-screen').classList.remove('hidden');
+    showQ();
+}
+
+function showQ() {
+    document.getElementById('q-num').innerText = `${currentIdx + 1} / 12`;
+    document.getElementById('q-text').innerText = selectedQs[currentIdx];
+    document.getElementById('answer-slider').value = 50;
+    document.getElementById('progress-bar').style.width = `${(currentIdx / 12) * 100}%`;
+    document.getElementById('back-btn').style.visibility = currentIdx > 0 ? 'visible' : 'hidden';
+}
+
+function handleNext() {
+    rawScores[currentIdx] = parseInt(document.getElementById('answer-slider').value);
+    if (currentIdx < 11) { currentIdx++; showQ(); } else { finish(); }
+}
+
+function goBack() { currentIdx--; showQ(); }
+
+function finish() {
+    document.getElementById('quiz-screen').classList.add('hidden');
+    document.getElementById('result-screen').style.display = 'block';
+    localStorage.setItem('jishin_app_lock', Date.now());
+
+    const avg = rawScores.reduce((a, b) => a + b, 0) / 1200;
+    let pool = avg >= 0.85 ? resultsMaster.slice(0,5) : (avg >= 0.5 ? resultsMaster.slice(5,10) : resultsMaster.slice(10));
+    const res = pool[Math.floor(Math.random() * pool.length)];
+
+    const color = colorsData[Math.floor(Math.random() * colorsData.length)];
+    const dir = directionsData[Math.floor(Math.random() * directionsData.length)];
+
+    document.getElementById('res-zodiac-name').innerText = selectedZodiac.n;
+    document.getElementById('res-zodiac-detail').innerText = selectedZodiac.d;
+    document.getElementById('res-type').innerText = res.t;
+    document.getElementById('res-short').innerText = `「${res.s}」`;
+    document.getElementById('res-long').innerText = res.l;
+    document.getElementById('res-color-name').innerText = color.n;
+    document.getElementById('res-color-reason').innerText = color.r;
+    document.getElementById('color-box').style.backgroundColor = color.h;
+    document.getElementById('res-dir').innerText = dir.d;
+    document.getElementById('res-dir-reason').innerText = dir.r;
+    document.getElementById('res-direction-advice').innerText = `【開運】部屋の「${dir.d}」を徹底清掃してください。`;
+    document.getElementById('res-behavior').innerText = behaviorAds[Math.floor(Math.random() * behaviorAds.length)];
+
+    document.body.style.backgroundColor = color.h;
+    const brightness = (parseInt(color.h.slice(1,3),16)*299 + parseInt(color.h.slice(3,5),16)*587 + parseInt(color.h.slice(5,7),16)*114)/1000;
+    document.body.style.color = brightness > 145 ? "#1a1a1a" : "#ffffff";
+    document.getElementById('progress-bar').style.width = '100%';
+}
+
+async function shareAndUnlock() {
+    const canvas = await html2canvas(document.getElementById('capture-area'));
+    const dataUrl = canvas.toDataURL("image/png");
+    const file = new File([await (await fetch(dataUrl)).blob()], "result.png", { type: "image/png" });
+    if (navigator.share) {
+        try {
+            await navigator.share({ title: '直心流・運気診断', files: [file] });
+            localStorage.removeItem('jishin_app_lock');
+            alert("シェア完了！制限を解除しました。");
+        } catch (e) {}
+    } else {
+        const a = document.createElement('a'); a.download = 'result.png'; a.href = dataUrl; a.click();
+        localStorage.removeItem('jishin_app_lock');
+        alert("保存完了！制限を解除しました。");
+    }
+}
+
+checkLock();
+</script>
+</body>
+</html>
